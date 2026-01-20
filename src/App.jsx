@@ -60,8 +60,16 @@ function App() {
         headers: { 'Content-Type': 'multipart/form-data' }
       })
       
-      const conversation = res.data?.messages || []
-      const code = res.data?.code || ''
+      // Map CrewAI backend response to UI format
+      const crewData = res.data;
+      
+      const conversation = [
+        { role: 'DataCleaner', content: crewData.data_cleaner },
+        { role: 'AlgorithmSelector', content: crewData.algorithm_selector },
+        { role: 'CodeGenerator', content: crewData.code_generator }
+      ];
+      
+      const code = crewData.code_generator || '';
 
       setAgents(baseAgents.map(a => ({ ...a, status: 'completed' })))
       setMessages(conversation)
@@ -86,12 +94,12 @@ function App() {
       <header className="header">
         <div className="header-content">
           <div className="logo-container">
-            <img src="/MR_Logo.webp" alt="MR Logo" />
+            <img src="/MR_Logo.webp" alt="MR Logo" /> 
           </div>
           <div className="title-section">
             <h1 className="title">ML Algorithm Advisor</h1>
             <p className="subtitle">Powered by CrewAI + Ollama llama3.1</p>
-            <p className="description">Upload CSV -> Auto-analyze -> Get best ML algorithm + Python code</p>
+            <p className="description">Upload CSV &rarr; Auto-analyze &rarr; Get best ML algorithm + Python code</p>
           </div>
         </div>
       </header>
@@ -156,7 +164,7 @@ function App() {
                 return (
                   <div key={idx} className="message">
                     <div className="message-role">📍 {roleLabel}</div>
-                    <div className="message-content">{msg.content}</div>
+                    <div className="message-content" style={{whiteSpace: 'pre-wrap'}}>{msg.content}</div>
                   </div>
                 )
               })}
@@ -199,7 +207,7 @@ function App() {
       </div>
 
       <footer className="footer">
-        <p>© MIT License(only for demo purpose) • CrewAI • Local Ollama Integration</p>
+        <p>© MIT License (Demo) • CrewAI • Local Ollama Integration</p>
       </footer>
     </div>
   )
